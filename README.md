@@ -36,9 +36,13 @@ pip install docker-compose
 docker-compose up
 ``` 
 
+## USER AND PASSWORD
 
+**default user**: elastic
 
-**This is required to perform massive insertions in parallel!**
+**default user**: colav
+
+ Please change .env file before deploy in production
 
 # License
 BSD-3-Clause License 

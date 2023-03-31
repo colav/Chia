@@ -2,21 +2,25 @@ version: '3.3'
 
 services:   
    elastic_search:
-     image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+     image: docker.elastic.co/elasticsearch/elasticsearch:$ELASTIC_VERSION
      container_name: elasticsearch
      ports:
       - 9200:9200
       - 9300:9300
      environment:
-      - cluster.name=docker-cluster
+      - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"      
+      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
+      - xpack.security.enabled=$ELASTIC_SECURITY
      ulimits:
       memlock:
         soft: -1
         hard: -1
      volumes:
-      - $HOME/data/ES:/usr/share/elasticsearch/data
+      - es_data:/usr/share/elasticsearch/data
+
      restart: always
      networks:
       - elastic
@@ -28,3 +32,5 @@ services:
 
 networks:
   elastic:
+volumes:
+  es_data:
