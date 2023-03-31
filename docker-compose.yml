@@ -1,0 +1,30 @@
+version: '3.3'
+
+services:   
+   elastic_search:
+     image: docker.elastic.co/elasticsearch/elasticsearch:8.7.0
+     container_name: elasticsearch
+     ports:
+      - 9200:9200
+      - 9300:9300
+     environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"      
+     ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+     volumes:
+      - $HOME/data/ES:/usr/share/elasticsearch/data
+     restart: always
+     networks:
+      - elastic
+     deploy:
+            resources:
+                limits:
+                  cpus: '2.0'
+                  memory: 4096M
+
+networks:
+  elastic:
