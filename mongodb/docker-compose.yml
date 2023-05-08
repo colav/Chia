@@ -3,13 +3,16 @@ version: '3.3'
 services:   
    mongodb:
      image: mongo:$MONGO_VERSION
-     container_name: mongodb
-     command: [mongod]
+     container_name: $MONGO_CONTAINER_NAME
      ports:
       - 27017:27017
      environment:
-       if [ MONGO_SECURITY == "true" ]; then MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME fi
-       if [ MONGO_SECURITY == "true" ]; then MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD fi     
+       - MONGO_INITDB_ROOT_USERNAME=root
+       - MONGO_INITDB_ROOT_PASSWORD=colav
+       - MONGO_INTERNAL_NETWORK=true
+       - MONGO_CONTAINER_NAME=mongodb
+       - MONGO_CPUS=8
+       - MONGO_RAM=12G
      ulimits:
       memlock:
         soft: -1
@@ -29,6 +32,6 @@ services:
 networks:
   mongodb:
     driver: bridge
-    internal: true
+    internal: $MONGO_INTERNAL_NETWORK
 volumes:
   mongodb_data:
