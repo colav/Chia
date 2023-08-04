@@ -1,11 +1,11 @@
 <img src="https://raw.githubusercontent.com/colav/colav.github.io/master/img/Logo.png"/>
 
-# Chai
-Dev-Ops for Colav services
+# MongoDB
+Colav MongoDB Dev Ops
 
 
 # Description
-This a mono repo with devops packages for multiples colav services.
+This package allows to setup a docker container with MongoDB.
 
 # Installation
 
@@ -32,7 +32,17 @@ pip install docker-compose
 
 # Usage
 
-Please read the README of every folder to deploy the service.
+```bash
+docker-compose up
+``` 
+
+## USER AND PASSWORD
+
+**default user**: root
+
+**default user**: colav
+
+ Please change .env file before deploy in production
 
 # License
 BSD-3-Clause License 
