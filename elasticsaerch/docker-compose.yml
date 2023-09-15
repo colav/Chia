@@ -3,16 +3,21 @@ version: '3.3'
 services:   
    elastic_search:
      image: docker.elastic.co/elasticsearch/elasticsearch:$ELASTIC_VERSION
-     container_name: elasticsearch
+     container_name: $ELASTIC_CONTAINER_NAME
      ports:
       - 9200:9200
       - 9300:9300
      environment:
+      - ELASTIC_CONTAINER_NAME=elasticsearch
+      - ELASTIC_INTERNAL_NETWORK=true
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=colav
+      - ELASTIC_SECURITY=true
+      - ELASTIC_CPUS=2
+      - ELASTIC_RAM=4G
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
-      - ELASTIC_USERNAME=$ELASTIC_USERNAME
-      - ELASTIC_PASSWORD=$ELASTIC_PASSWORD
       - xpack.security.enabled=$ELASTIC_SECURITY
      ulimits:
       memlock:
@@ -27,12 +32,12 @@ services:
      deploy:
             resources:
                 limits:
-                  cpus: '2.0'
-                  memory: 4096M
+                  cpus: $ELASTIC_CPUS
+                  memory: $ELASTIC_RAM
 
 networks:
   elastic:
     driver: bridge
-    internal: true
+    internal: $ELASTIC_INTERNAL_NETWORK
 volumes:
   es_data:
