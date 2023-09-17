@@ -13,11 +13,11 @@ services:
       - ELASTIC_USERNAME=elastic
       - ELASTIC_PASSWORD=colav
       - ELASTIC_SECURITY=true
-      - ELASTIC_CPUS=2
-      - ELASTIC_RAM=4G
+      - ELASTIC_CPUS=$ELASTIC_CPUS
+      - ELASTIC_RAM=$ELASTIC_RAM
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms2g -Xmx2g"
+      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
       - xpack.security.enabled=$ELASTIC_SECURITY
      ulimits:
       memlock:
