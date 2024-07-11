@@ -16,14 +16,11 @@ COPY .env.local /guatquyca/.env.local
 
 WORKDIR /guatquyca
 
-
 RUN npm install
 
 RUN npm run build
 
-ENV PORT 3090
+EXPOSE 3080
 
-EXPOSE $PORT
-
-CMD ["npm", "run", "start", "--","-p","3090"]
+CMD ["npm", "run", "start","--","-p","3080"]
  

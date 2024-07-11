@@ -21,5 +21,5 @@ This is the impactu frontend package, to build it please run the command below, 
 the file `.env.local` with the respective information.
 
 `
-docker build  --force-rm=true --no-cache=true -t colav/impactu-frontend:latest .
+docker build  --force-rm=true --no-cache=true -t colav/impactu-ui:latest .
 `
