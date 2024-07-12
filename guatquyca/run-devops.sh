@@ -12,7 +12,7 @@ docker push colav/impactu-ui:latest
 #stopping current container
 docker rm -f ./impactu-ui
 
-#cleaning de old images
+#cleaning the old images
 for i in $(docker images | grep "colav/impactu-ui" | grep -v latest | gawk -F" " '{print $3}');do docker image rm -f $i; done
 
 #starting the new service
