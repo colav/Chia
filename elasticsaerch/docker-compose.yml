@@ -17,16 +17,16 @@ services:
       - ELASTIC_RAM=$ELASTIC_RAM
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms4g -Xmx4g"
+      - ES_JAVA_OPTS=$ELASTIC_ES_JAVA_OPTS
       - xpack.security.enabled=$ELASTIC_SECURITY
       - xpack.security.http.ssl.enabled=false
+      - search.default_search_timeout=$ELASTIC_DEFAULT_SEARCH_TIMEOUT
      ulimits:
       memlock:
         soft: -1
         hard: -1
      volumes:
       - es_data:/usr/share/elasticsearch/data
-
      restart: always
      networks:
       - elastic
