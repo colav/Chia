@@ -10,17 +10,27 @@ FROM node:20-alpine
 
 RUN apk add git
 
-RUN git clone -b next_develop https://github.com/colav/guatquyca.git
+ARG branch next_develop
 
-COPY .env.local /guatquyca/.env.local
+RUN git clone -b $branch  https://github.com/colav/guatquyca.git
+
+ARG env_file
+
+COPY $env_file /guatquyca/.env.local
 
 WORKDIR /guatquyca
+
+RUN rm -rf .next
 
 RUN npm install
 
 RUN npm run build
 
-EXPOSE 3080
+ARG port
 
-CMD ["npm", "run", "start","--","-p","3080"]
- 
+ENV PORT $port
+EXPOSE $port
+
+#CMD ["npm", "run", "start","--","-p", "${port}"]
+
+CMD ["sh", "-c", "echo port ${PORT} && npm run start -- -p ${PORT}"]
