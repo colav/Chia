@@ -8,6 +8,6 @@ image="colav/openalex_topic_ai"
 
 chmod +x topic_classifier/serve
 
-docker build  -t ${image} .
+docker build --network=host -t ${image} .
 
-docker push ${image}
+#docker push ${image}
