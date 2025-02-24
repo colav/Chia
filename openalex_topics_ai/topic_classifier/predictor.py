@@ -22,32 +22,32 @@ model_path = os.path.join(prefix, 'model')
 with open(os.path.join(model_path, "target_vocab.pkl"), "rb") as f:
     target_vocab = pickle.load(f)
 
-print("Loaded target vocab")
+print("Loaded target vocab - still wait for requests")
 
 with open(os.path.join(model_path, "inv_target_vocab.pkl"), "rb") as f:
     inv_target_vocab = pickle.load(f)
 
-print("Loaded inverse target vocab")
+print("Loaded inverse target vocab - still wait for requests")
 
 with open(os.path.join(model_path, "citation_feature_vocab.pkl"), "rb") as f:
     citation_feature_vocab = pickle.load(f)
-    
-print("Loaded citation features vocab.")
+
+print("Loaded citation features vocab. - still wait for requests")
 
 with open(os.path.join(model_path, "gold_to_id_mapping_dict.pkl"), "rb") as f:
     gold_to_label_mapping = pickle.load(f)
 
-print("Loaded gold citation mapping")
+print("Loaded gold citation mapping - still wait for requests")
 
 with open(os.path.join(model_path, "gold_citations_dict.pkl"), "rb") as f:
     gold_dict = pickle.load(f)
-    
-print("Loaded gold citation L1")
+
+print("Loaded gold citation L1 - still wait for requests")
 
 with open(os.path.join(model_path, "non_gold_citations_dict.pkl"), "rb") as f:
     non_gold_dict = pickle.load(f)
 
-print("Loaded non-gold citation L1")
+print("Loaded non-gold citation L1 - still wait for requests")
 
 # Load the tokenizer and embedding model
 emb_model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
@@ -75,7 +75,7 @@ def name_to_keep_ind(groups):
         return 0
     else:
         return 1
-    
+
 def remove_non_latin_characters(text):
     """
     Function to remove non-latin characters.
@@ -97,7 +97,7 @@ def remove_non_latin_characters(text):
         except:
             pass
     return "".join(final_char)
-    
+
 def group_non_latin_characters(text):
     """
     Function to group non-latin characters and return the number of latin characters.
@@ -173,7 +173,7 @@ def get_journal_emb(journal_name):
             return np.zeros(384, dtype=np.float32)
     else:
         return np.zeros(384, dtype=np.float32)
-    
+
 def tokenize(seq, **kwargs):
     """
     Function to tokenize text using model tokenizer.
@@ -239,7 +239,7 @@ def get_final_citations_feature(citations, num_to_keep):
             return temp_feature
     else:
         return [1] + [0]*(num_to_keep - 1)
-    
+
 def merge_title_and_abstract(title, abstract):
     """
     Function to merge title and abstract together for model input.
@@ -367,7 +367,7 @@ def clean_title(old_title):
         return new_title
     else:
         return ''
-    
+
 def clean_abstract(raw_abstract, inverted=False):
     """
     Function to clean abstract and return it in a format for the model.
