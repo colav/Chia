@@ -1,6 +1,6 @@
 <img src="https://raw.githubusercontent.com/colav/colav.github.io/master/img/Logo.png"/>
 
-# OpenAlex Topic AI
+# OpenAlex Topic Classification
 Model to predict the topic of a document using a pre-trained model.
 Modified from https://github.com/ourresearch/openalex-topic-classification/tree/main
 
