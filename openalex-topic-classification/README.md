@@ -5,7 +5,7 @@ Model to predict the topic of a document using a pre-trained model.
 Modified from https://github.com/ourresearch/openalex-topic-classification/tree/main
 
 # Description
-This package allows to setup a docker container with OpenAlex Topic AI model for inference through and API.
+This package allows to setup a docker container with OpenAlex Topic AI model for inference through an API.
 
 # Installation
 
