@@ -18,12 +18,15 @@ x-airflow-common:
     AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
     PYTHONPATH: /opt/airflow/impactu:/opt/airflow
   volumes: &id003
-  - /home/ozapatam/impactu_airflow/dags:/opt/airflow/dags
-  - /home/ozapatam/impactu_airflow:/opt/airflow/impactu
-  - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
-  - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
-  - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
-  - /home/ozapatam/impactu_airflow:/opt/airflow
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/dags:/opt/airflow/dags
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/impactu:/opt/airflow/impactu
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/logs:/opt/airflow/logs
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/config:/opt/airflow/config
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/plugins:/opt/airflow/plugins
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/cache:/opt/airflow/cache
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/mongodb:/opt/airflow/mongodb
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/redis:/opt/airflow/redis
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/postgres:/opt/airflow/postgres
   - ./connections.yaml:/opt/airflow/connections.yaml
   user: ${AIRFLOW_UID:-50000}:0
   depends_on: &id006
@@ -39,7 +42,7 @@ services:
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     volumes:
-    - postgres-db-volume:/var/lib/postgresql/data
+    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/postgres:/var/lib/postgresql/data
     healthcheck:
       test:
       - CMD
@@ -54,6 +57,8 @@ services:
     image: redis:7.2-bookworm
     expose:
     - 6379
+    volumes:
+    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/redis:/data
     healthcheck:
       test:
       - CMD
@@ -238,16 +243,16 @@ services:
       \ resources to run Airflow (see above)!\\e[0m\"\n  echo \"Please follow the\
       \ instructions to increase amount of resources available:\"\n  echo \"   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin\"\
       \n  echo\nfi\necho\necho \"Creating missing opt dirs if missing:\"\necho\nmkdir\
-      \ -v -p /opt/airflow/{logs,dags,plugins,config}\necho\necho \"Airflow version:\"\
+      \ -v -p /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\necho\necho \"Airflow version:\"\
       \n/entrypoint airflow version\necho\necho \"Files in shared volumes:\"\necho\n\
-      ls -la /opt/airflow/{logs,dags,plugins,config}\necho\necho \"Running airflow\
+      ls -la /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\necho\necho \"Running airflow\
       \ config list to create default config file if missing.\"\necho\n/entrypoint\
       \ airflow config list >/dev/null\necho\necho \"Files in shared volumes:\"\n\
-      echo\nls -la /opt/airflow/{logs,dags,plugins,config}\necho\necho \"Change ownership\
+      echo\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\necho\necho \"Change ownership\
       \ of files in /opt/airflow to ${AIRFLOW_UID}:0\"\necho\nchown -R \"${AIRFLOW_UID}:0\"\
       \ /opt/airflow/\necho\necho \"Change ownership of files in shared volumes to\
-      \ ${AIRFLOW_UID}:0\"\necho\nchown -v -R \"${AIRFLOW_UID}:0\" /opt/airflow/{logs,dags,plugins,config}\n\
-      echo\necho \"Files in shared volumes:\"\necho\nls -la /opt/airflow/{logs,dags,plugins,config}\n\
+      \ ${AIRFLOW_UID}:0\"\necho\nchown -v -R \"${AIRFLOW_UID}:0\" /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\n\
+      echo\necho \"Files in shared volumes:\"\necho\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\n\
       \n/entrypoint airflow connections import /opt/airflow/connections.yaml\n"
   airflow-cli:
     build: *id001
@@ -309,6 +314,7 @@ services:
     - 27017
     environment:
     - MONGO_INITDB_DATABASE=impactu
+    volumes:
+    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/mongodb:/data/db
     restart: always
-volumes:
-  postgres-db-volume: null
+volumes: {}
