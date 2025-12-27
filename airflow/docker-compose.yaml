@@ -24,9 +24,7 @@ x-airflow-common:
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/config:/opt/airflow/config
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/plugins:/opt/airflow/plugins
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/cache:/opt/airflow/cache
-  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/mongodb:/opt/airflow/mongodb
-  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/redis:/opt/airflow/redis
-  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/postgres:/opt/airflow/postgres
+  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/data:/opt/airflow/data
   - ./connections.yaml:/opt/airflow/connections.yaml
   user: ${AIRFLOW_UID:-50000}:0
   depends_on: &id006
@@ -42,7 +40,7 @@ services:
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     volumes:
-    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/postgres:/var/lib/postgresql/data
+    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/data/postgres:/var/lib/postgresql/data
     healthcheck:
       test:
       - CMD
@@ -58,7 +56,7 @@ services:
     expose:
     - 6379
     volumes:
-    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/redis:/data
+    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/data/redis:/data
     healthcheck:
       test:
       - CMD
@@ -215,7 +213,11 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
     volumes: *id003
     user: 0:0
-    depends_on: *id006
+    depends_on:
+      redis: *id004
+      postgres: *id005
+      mongodb:
+        condition: service_healthy
     entrypoint: /bin/bash
     command:
     - -c
@@ -243,16 +245,14 @@ services:
       \ resources to run Airflow (see above)!\\e[0m\"\n  echo \"Please follow the\
       \ instructions to increase amount of resources available:\"\n  echo \"   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin\"\
       \n  echo\nfi\necho\necho \"Creating missing opt dirs if missing:\"\necho\nmkdir\
-      \ -v -p /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\necho\necho \"Airflow version:\"\
+      \ -v -p /opt/airflow/{logs,dags,plugins,config,impactu,cache} /opt/airflow/data/{postgres,mongodb,redis}\necho\necho \"Airflow version:\"\
       \n/entrypoint airflow version\necho\necho \"Files in shared volumes:\"\necho\n\
-      ls -la /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\necho\necho \"Running airflow\
+      ls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\necho\necho \"Running airflow\
       \ config list to create default config file if missing.\"\necho\n/entrypoint\
       \ airflow config list >/dev/null\necho\necho \"Files in shared volumes:\"\n\
-      echo\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\necho\necho \"Change ownership\
-      \ of files in /opt/airflow to ${AIRFLOW_UID}:0\"\necho\nchown -R \"${AIRFLOW_UID}:0\"\
-      \ /opt/airflow/\necho\necho \"Change ownership of files in shared volumes to\
-      \ ${AIRFLOW_UID}:0\"\necho\nchown -v -R \"${AIRFLOW_UID}:0\" /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\n\
-      echo\necho \"Files in shared volumes:\"\necho\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,mongodb,redis,postgres,cache}\n\
+      echo\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\necho\necho \"Change ownership\
+      \ of files in shared volumes to ${AIRFLOW_UID}:0\"\necho\nchown -v -R \"${AIRFLOW_UID}:0\" /opt/airflow/{logs,dags,plugins,config,impactu,cache}\n\
+      echo\necho \"Files in shared volumes:\"\necho\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\n\
       \n/entrypoint airflow connections import /opt/airflow/connections.yaml\n"
   airflow-cli:
     build: *id001
@@ -315,6 +315,11 @@ services:
     environment:
     - MONGO_INITDB_DATABASE=impactu
     volumes:
-    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/mongodb:/data/db
+    - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/data/mongodb:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     restart: always
 volumes: {}
