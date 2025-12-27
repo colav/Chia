@@ -1,5 +1,5 @@
 x-airflow-common:
-  image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+  image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
   environment: &id002
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
@@ -65,7 +65,7 @@ services:
       start_period: 30s
     restart: always
   airflow-apiserver:
-    image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+    image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
@@ -89,7 +89,7 @@ services:
       start_period: 30s
     restart: always
   airflow-scheduler:
-    image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+    image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
@@ -111,7 +111,7 @@ services:
       start_period: 30s
     restart: always
   airflow-dag-processor:
-    image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+    image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
@@ -131,7 +131,7 @@ services:
       start_period: 30s
     restart: always
   airflow-worker:
-    image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+    image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
       AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
@@ -169,7 +169,7 @@ services:
       start_period: 30s
     restart: always
   airflow-triggerer:
-    image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+    image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
@@ -189,7 +189,7 @@ services:
       start_period: 30s
     restart: always
   airflow-init:
-    image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+    image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
       AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
@@ -252,7 +252,7 @@ services:
       echo\necho \"Files in shared volumes:\"\necho\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\n\
       \nif [ -f /opt/airflow/connections.yaml ]; then\n  /entrypoint airflow connections import /opt/airflow/connections.yaml\nfi\n"
   airflow-cli:
-    image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+    image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment:
       AIRFLOW__CORE__EXECUTOR: CeleryExecutor
       AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
@@ -280,7 +280,7 @@ services:
     - -c
     - airflow
   flower:
-    image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
+    image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
