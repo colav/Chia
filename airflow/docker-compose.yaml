@@ -305,8 +305,8 @@ services:
     restart: always
   mongodb:
     image: mongo:8.0.5
-    ports:
-    - 27017:27017
+    expose:
+    - 27017
     environment:
     - MONGO_INITDB_DATABASE=impactu
     restart: always
