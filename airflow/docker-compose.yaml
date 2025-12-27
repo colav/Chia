@@ -22,7 +22,7 @@ x-airflow-common:
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/plugins:/opt/airflow/plugins
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/cache:/opt/airflow/cache
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/data:/opt/airflow/data
-  - ./connections.yaml:/opt/airflow/connections.yaml
+  - ${AIRFLOW_PROJ_DIR:-.}/connections.yaml:/opt/airflow/connections.yaml
   user: ${AIRFLOW_UID:-50000}:0
   depends_on: &id006
     redis: &id004
@@ -250,7 +250,7 @@ services:
       echo\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\necho\necho \"Change ownership\
       \ of files in shared volumes to ${AIRFLOW_UID}:0\"\necho\nchown -v -R \"${AIRFLOW_UID}:0\" /opt/airflow/{logs,dags,plugins,config,impactu,cache}\n\
       echo\necho \"Files in shared volumes:\"\necho\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\n\
-      \n/entrypoint airflow connections import /opt/airflow/connections.yaml\n"
+      \nif [ -f /opt/airflow/connections.yaml ]; then\n  /entrypoint airflow connections import /opt/airflow/connections.yaml\nfi\n"
   airflow-cli:
     image: colav/impactu_airflow:${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment:
