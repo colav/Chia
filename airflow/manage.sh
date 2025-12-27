@@ -37,16 +37,16 @@ case $ACTION in
     build)
         # Obtener el tag del archivo .env
         TAG=$(grep AIRFLOW_IMAGE_TAG "$ENV_FILE" | cut -d'=' -f2)
-        TAG=${TAG:-latest}
-        echo "🛠 Construyendo imagen localmente con tag: colav/impactu_airflow:$TAG"
-        docker build -t "colav/impactu_airflow:$TAG" ../../impactu_airflow
+        TAG=${TAG:-3.1.0}
+        echo "🛠 Construyendo imagen BASE de infraestructura con tag: colav/impactu_airflow:base-$TAG"
+        docker build --build-arg AIRFLOW_VERSION="$TAG" -t "colav/impactu_airflow:base-$TAG" .
         ;;
     push)
         # Obtener el tag del archivo .env
         TAG=$(grep AIRFLOW_IMAGE_TAG "$ENV_FILE" | cut -d'=' -f2)
-        TAG=${TAG:-latest}
-        echo "📤 Subiendo imagen a Docker Hub: colav/impactu_airflow:$TAG"
-        docker push "colav/impactu_airflow:$TAG"
+        TAG=${TAG:-3.1.0}
+        echo "📤 Subiendo imagen BASE a Docker Hub: colav/impactu_airflow:base-$TAG"
+        docker push "colav/impactu_airflow:base-$TAG"
         ;;
     *)
         docker compose -p "$PROJECT_NAME" --env-file "$ENV_FILE" $ACTION
