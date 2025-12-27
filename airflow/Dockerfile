@@ -10,6 +10,16 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Copy DAGs and plugins to the image
+COPY --chown=airflow:0 dags/ /opt/airflow/dags/
+COPY --chown=airflow:0 plugins/ /opt/airflow/plugins/
+
+# Set default environment to prod
+ENV ENVIRONMENT=prod
+
 USER airflow
 
 # This is the base infrastructure image.
