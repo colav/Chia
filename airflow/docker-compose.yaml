@@ -14,6 +14,7 @@ x-airflow-common:
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
     PYTHONPATH: /opt/airflow/impactu:/opt/airflow
+    GITHUB_TOKEN: ${GITHUB_TOKEN:-}
   volumes: &id003
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/dags:/opt/airflow/dags
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/impactu:/opt/airflow/impactu
@@ -146,6 +147,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
       AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
       PYTHONPATH: /opt/airflow/impactu:/opt/airflow
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       DUMB_INIT_SETSID: '0'
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
@@ -204,6 +206,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ''
       AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
       PYTHONPATH: /opt/airflow/impactu:/opt/airflow
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       _AIRFLOW_DB_MIGRATE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
@@ -267,6 +270,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
       AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
       PYTHONPATH: /opt/airflow/impactu:/opt/airflow
+      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       CONNECTION_CHECK_MAX_COUNT: '0'
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
