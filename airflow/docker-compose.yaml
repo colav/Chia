@@ -248,7 +248,7 @@ services:
       \ resources to run Airflow (see above)!\\e[0m\"\n  echo \"Please follow the\
       \ instructions to increase amount of resources available:\"\n  echo \"   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin\"\
       \n  echo\nfi\necho\necho \"Creating missing opt dirs if missing:\"\necho\nmkdir\
-      \ -v -p /opt/airflow/{logs,dags,plugins,config,impactu,cache} /opt/airflow/data/{postgres,mongodb,redis}\necho\necho \"Airflow version:\"\
+      \ -v -p /opt/airflow/{logs,dags,plugins,config,impactu,cache} /opt/airflow/data/{postgres,mongodb,redis}\necho\necho \"Copying DAGs and plugins from image to volume if dev:\"\nif [[ \"$${ENVIRONMENT}\" == \"dev\" ]]; then cp -v /opt/airflow/dags_base/*.py /opt/airflow/dags/ && cp -rv /opt/airflow/plugins_base/. /opt/airflow/plugins/; fi\necho\necho \"Airflow version:\"\
       \n/entrypoint airflow version\necho\necho \"Files in shared volumes:\"\necho\n\
       ls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\necho\necho \"Running airflow\
       \ config list to create default config file if missing.\"\necho\n/entrypoint\

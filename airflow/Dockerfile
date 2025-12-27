@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install -y \
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Copy DAGs and plugins to the image
-COPY --chown=airflow:0 dags/ /opt/airflow/dags/
-COPY --chown=airflow:0 plugins/ /opt/airflow/plugins/
+# Copy DAGs and plugins to a base directory to be used by entrypoint if needed
+COPY --chown=airflow:0 dags/ /opt/airflow/dags_base/
+COPY --chown=airflow:0 plugins/ /opt/airflow/plugins_base/
 
 # Set default environment to prod
 ENV ENVIRONMENT=prod
