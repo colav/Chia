@@ -1,0 +1,5 @@
+mongodb_default:
+  conn_type: mongo
+  host: mongodb
+  port: 27017
+  schema: impactu
