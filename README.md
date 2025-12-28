@@ -1,6 +1,8 @@
 <img src="https://raw.githubusercontent.com/colav/colav.github.io/master/img/Logo.png"/>
 
-# Chai
+[![Build and Push Airflow Docker Image](https://github.com/colav/Chia/actions/workflows/airflow-docker.yml/badge.svg)](https://github.com/colav/Chia/actions/workflows/airflow-docker.yml)
+
+# Chia
 Dev-Ops for Colav services
 
 
