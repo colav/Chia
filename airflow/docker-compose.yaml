@@ -13,12 +13,12 @@ x-airflow-common:
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
-    PYTHONPATH: /opt/airflow/impactu:/opt/airflow
+    PYTHONPATH: /opt/airflow/impactu_airflow:/opt/airflow
     GITHUB_TOKEN: ${GITHUB_TOKEN:-}
     ENVIRONMENT: ${ENVIRONMENT:-prod}
   volumes: &id003
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/dags:/opt/airflow/dags
-  - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/impactu:/opt/airflow/impactu
+  - ${IMPACTU_AIRFLOW_REPO_PATH:-${IMPACTU_AIRFLOW_PATH:-/storage/airflow}}:/opt/airflow/impactu_airflow:ro
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/logs:/opt/airflow/logs
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/config:/opt/airflow/config
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/plugins:/opt/airflow/plugins
@@ -147,7 +147,7 @@ services:
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
       AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
-      PYTHONPATH: /opt/airflow/impactu:/opt/airflow
+      PYTHONPATH: /opt/airflow/impactu_airflow:/opt/airflow
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       ENVIRONMENT: ${ENVIRONMENT:-prod}
       DUMB_INIT_SETSID: '0'
@@ -207,7 +207,7 @@ services:
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
       _PIP_ADDITIONAL_REQUIREMENTS: ''
       AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
-      PYTHONPATH: /opt/airflow/impactu:/opt/airflow
+      PYTHONPATH: /opt/airflow/impactu_airflow:/opt/airflow
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       ENVIRONMENT: ${ENVIRONMENT:-prod}
       _AIRFLOW_DB_MIGRATE: 'true'
@@ -248,14 +248,14 @@ services:
       \ resources to run Airflow (see above)!\\e[0m\"\n  echo \"Please follow the\
       \ instructions to increase amount of resources available:\"\n  echo \"   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin\"\
       \n  echo\nfi\necho\necho \"Creating missing opt dirs if missing:\"\necho\nmkdir\
-      \ -v -p /opt/airflow/{logs,dags,plugins,config,impactu,cache} /opt/airflow/data/{postgres,mongodb,redis}\necho\necho \"Copying DAGs and plugins from image to volume if dev:\"\nif [[ \"$${ENVIRONMENT}\" == \"dev\" ]]; then cp -v /opt/airflow/dags_base/*.py /opt/airflow/dags/ && cp -rv /opt/airflow/plugins_base/. /opt/airflow/plugins/; fi\necho\necho \"Airflow version:\"\
+      \ -v -p /opt/airflow/{logs,dags,plugins,config,cache,impactu_airflow} /opt/airflow/data/{postgres,mongodb,redis}\necho\necho \"Copying DAGs and plugins from image to volume if dev:\"\nif [[ \"$${ENVIRONMENT}\" == \"dev\" ]]; then cp -v /opt/airflow/dags_base/*.py /opt/airflow/dags/ && cp -rv /opt/airflow/plugins_base/. /opt/airflow/plugins/; fi\necho\necho \"Airflow version:\"\
       \n/entrypoint airflow version\necho\necho \"Files in shared volumes:\"\necho\n\
-      ls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\necho\necho \"Running airflow\
+      ls -la /opt/airflow/{logs,dags,plugins,config,cache,impactu_airflow}\necho\necho \"Running airflow\
       \ config list to create default config file if missing.\"\necho\n/entrypoint\
       \ airflow config list >/dev/null\necho\necho \"Files in shared volumes:\"\n\
-      echo\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\necho\necho \"Change ownership\
-      \ of files in shared volumes to ${AIRFLOW_UID}:0\"\necho\nchown -v -R \"${AIRFLOW_UID}:0\" /opt/airflow/{logs,dags,plugins,config,impactu,cache}\n\
-      echo\necho \"Files in shared volumes:\"\necho\nls -la /opt/airflow/{logs,dags,plugins,config,impactu,cache}\n\
+      echo\nls -la /opt/airflow/{logs,dags,plugins,config,cache,impactu_airflow}\necho\necho \"Change ownership\
+      \ of files in shared volumes to ${AIRFLOW_UID}:0\"\necho\nchown -v -R \"${AIRFLOW_UID}:0\" /opt/airflow/{logs,dags,plugins,config,cache,impactu_airflow}\n\
+      echo\necho \"Files in shared volumes:\"\necho\nls -la /opt/airflow/{logs,dags,plugins,config,cache,impactu_airflow}\n\
       \nif [ -f /opt/airflow/connections.yaml ]; then\n  /entrypoint airflow connections import /opt/airflow/connections.yaml\nfi\n"
   airflow-cli:
     image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
@@ -272,7 +272,7 @@ services:
       AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
       _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
       AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
-      PYTHONPATH: /opt/airflow/impactu:/opt/airflow
+      PYTHONPATH: /opt/airflow/impactu_airflow:/opt/airflow
       GITHUB_TOKEN: ${GITHUB_TOKEN:-}
       ENVIRONMENT: ${ENVIRONMENT:-prod}
       CONNECTION_CHECK_MAX_COUNT: '0'

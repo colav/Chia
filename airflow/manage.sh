@@ -9,7 +9,7 @@ ACTION=${2:-up}
 # Validar entorno
 if [[ "$ENV" != "dev" && "$ENV" != "prod" ]]; then
     echo "❌ Error: Debes especificar el entorno (dev o prod)."
-    echo "Uso: $0 [dev|prod] [up|down|restart|logs|pull|ps]"
+    echo "Uso: $0 [dev|prod] [up|down|restart|logs|pull|ps|build|push]"
     exit 1
 fi
 

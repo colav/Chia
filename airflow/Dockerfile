@@ -20,6 +20,9 @@ COPY --chown=airflow:0 plugins/ /opt/airflow/plugins_base/
 # Set default environment to prod
 ENV ENVIRONMENT=prod
 
+COPY requirements.txt .
+RUN uv pip install --system --no-cache -r requirements.txt
+
 USER airflow
 
 # This is the base infrastructure image.
