@@ -290,7 +290,7 @@ dag = db.get_dag(dag_id)
 # Basic metadata
 print(f"DAG ID: {{dag_id}}")
 print(f"Description: {{dag.description or 'N/A'}}")
-print(f"Schedule: {{dag.schedule_interval}}")
+print(f"Schedule: {{dag.schedule}}")
 print(f"Tags: {{dag.tags}}")
 print(f"Tasks: {{len(dag.tasks)}}")
 
