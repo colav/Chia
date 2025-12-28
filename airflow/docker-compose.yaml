@@ -10,6 +10,19 @@ x-airflow-common:
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+    AIRFLOW__DAG_PROCESSOR__DAG_BUNDLE_CONFIG_LIST: |
+      [
+          {
+              "name": "impactu_prod",
+              "classpath": "airflow.providers.git.bundles.git.GitDagBundle",
+              "kwargs": {
+                  "git_conn_id": "git_impactu",
+                  "tracking_ref": "main",
+                  "refresh_interval": 300,
+                  "subdir": "."
+              }
+          }
+      ]
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
@@ -135,21 +148,7 @@ services:
   airflow-worker:
     image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment:
-      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-      AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-      AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
-      AIRFLOW__CORE__FERNET_KEY: ''
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
-      AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
-      _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-      AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
-      PYTHONPATH: /opt/airflow/impactu_airflow:/opt/airflow
-      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
-      ENVIRONMENT: ${ENVIRONMENT:-prod}
+      <<: *id002
       DUMB_INIT_SETSID: '0'
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
@@ -195,21 +194,7 @@ services:
   airflow-init:
     image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment:
-      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-      AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-      AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
-      AIRFLOW__CORE__FERNET_KEY: ''
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
-      AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
-      _PIP_ADDITIONAL_REQUIREMENTS: ''
-      AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
-      PYTHONPATH: /opt/airflow/impactu_airflow:/opt/airflow
-      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
-      ENVIRONMENT: ${ENVIRONMENT:-prod}
+      <<: *id002
       _AIRFLOW_DB_MIGRATE: 'true'
       _AIRFLOW_WWW_USER_CREATE: 'true'
       _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
@@ -260,21 +245,7 @@ services:
   airflow-cli:
     image: colav/impactu_airflow:base-${AIRFLOW_IMAGE_TAG:-3.1.0}
     environment:
-      AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-      AIRFLOW__CORE__AUTH_MANAGER: airflow.providers.fab.auth_manager.fab_auth_manager.FabAuthManager
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
-      AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://airflow:airflow@postgres/airflow
-      AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
-      AIRFLOW__CORE__FERNET_KEY: ''
-      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-      AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
-      AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
-      _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
-      AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg
-      PYTHONPATH: /opt/airflow/impactu_airflow:/opt/airflow
-      GITHUB_TOKEN: ${GITHUB_TOKEN:-}
-      ENVIRONMENT: ${ENVIRONMENT:-prod}
+      <<: *id002
       CONNECTION_CHECK_MAX_COUNT: '0'
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
