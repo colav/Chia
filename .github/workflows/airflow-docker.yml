@@ -50,7 +50,7 @@ jobs:
           images: colav/impactu_airflow
           tags: |
             type=raw,value=base-${{ steps.get_version.outputs.tag }}
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=base-latest,enable=${{ github.ref == 'refs/heads/main' }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
