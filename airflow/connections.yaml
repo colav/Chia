@@ -5,4 +5,4 @@ mongodb_default:
   schema: impactu
 git_impactu:
   conn_type: git
-  host: https://github.com/colav/impactu_airflow.git
+  host: https://github.com/omazapa/impactu_airflow.git

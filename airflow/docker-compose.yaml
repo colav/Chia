@@ -13,16 +13,23 @@ x-airflow-common:
     AIRFLOW__DAG_PROCESSOR__DAG_BUNDLE_CONFIG_LIST: |
       [
           {
-              "name": "impactu_prod",
-              "classpath": "airflow.providers.git.bundles.git.GitDagBundle",
+              "name": "dags-folder",
+              "classpath": "airflow.dag_processing.bundles.local.LocalDagBundle",
               "kwargs": {
-                  "git_conn_id": "git_impactu",
-                  "tracking_ref": "main",
-                  "refresh_interval": 300,
-                  "subdir": "."
+                  "path": "/opt/airflow/dags"
               }
           }
       ]
+          # {
+          #     "name": "impactu_prod",
+          #     "classpath": "airflow.providers.git.bundles.git.GitDagBundle",
+          #     "kwargs": {
+          #         "git_conn_id": "git_impactu",
+          #         "tracking_ref": "main",
+          #         "refresh_interval": 300,
+          #         "subdir": "."
+          #     }
+          # },      
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
     AIRFLOW_CONFIG: /opt/airflow/config/airflow.cfg

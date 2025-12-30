@@ -21,7 +21,14 @@ COPY --chown=airflow:0 plugins/ /opt/airflow/plugins_base/
 ENV ENVIRONMENT=prod
 
 COPY requirements.txt .
-RUN uv pip install --system --no-cache -r requirements.txt
+ARG PACKAGE_VERSION=latest
+RUN if [ "$PACKAGE_VERSION" = "latest" ]; then \
+        uv pip install --system --no-cache -r requirements.txt; \
+    else \
+        # Replace impactu-airflow with specific version if provided
+        sed -i "s/impactu-airflow/impactu-airflow==$PACKAGE_VERSION/g" requirements.txt && \
+        uv pip install --system --no-cache -r requirements.txt; \
+    fi
 
 USER airflow
 

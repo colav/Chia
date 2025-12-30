@@ -17,6 +17,8 @@ on:
       - main
     paths:
       - 'airflow/**'
+  repository_dispatch:
+    types: [impactu_airflow_release]
   workflow_dispatch:
 
 jobs:
@@ -39,9 +41,17 @@ jobs:
       - name: Get Airflow version
         id: get_version
         run: |
-          TAG=$(grep AIRFLOW_IMAGE_TAG airflow/.env.prod | cut -d'=' -f2)
-          TAG=${TAG:-3.1.0}
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          # Default Airflow version from .env.prod
+          AIRFLOW_TAG=$(grep AIRFLOW_IMAGE_TAG airflow/.env.prod | cut -d'=' -f2)
+          AIRFLOW_TAG=${AIRFLOW_TAG:-3.1.0}
+          echo "airflow_tag=$AIRFLOW_TAG" >> $GITHUB_OUTPUT
+          
+          # Package version from repository_dispatch or default to latest
+          PACKAGE_VERSION="latest"
+          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            PACKAGE_VERSION="${{ github.event.client_payload.version }}"
+          fi
+          echo "package_version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
 
       - name: Docker meta
         id: meta
@@ -49,8 +59,9 @@ jobs:
         with:
           images: colav/impactu_airflow
           tags: |
-            type=raw,value=base-${{ steps.get_version.outputs.tag }}
+            type=raw,value=base-${{ steps.get_version.outputs.airflow_tag }}
             type=raw,value=base-latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=base-${{ steps.get_version.outputs.airflow_tag }}-${{ steps.get_version.outputs.package_version }},enable=${{ steps.get_version.outputs.package_version != 'latest' }}
 
       - name: Build and push
         uses: docker/build-push-action@v5
@@ -60,4 +71,5 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            AIRFLOW_VERSION=${{ steps.get_version.outputs.tag }}
+            AIRFLOW_VERSION=${{ steps.get_version.outputs.airflow_tag }}
+            PACKAGE_VERSION=${{ steps.get_version.outputs.package_version }}
