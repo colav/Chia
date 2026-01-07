@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  opensearch-node1:
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-3.4.0}
+    container_name: opensearch-node1
+    environment:
+      - cluster.name=${CLUSTER_NAME:-opensearch-cluster}
+      - node.name=opensearch-node1
+      - discovery.seed_hosts=opensearch-node1,opensearch-node2
+      - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms${HEAP_SIZE:-512m} -Xmx${HEAP_SIZE:-512m} -Xss2m"
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_PASSWORD:-Admin@123}
+      - plugins.security.disabled=${SECURITY_DISABLED:-false}
+      # GPU Configuration (only used when ENABLE_GPU=true)
+      - PYTORCH_VERSION=${PYTORCH_VERSION:-1.12.1}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch-data1:/usr/share/opensearch/data
+    ports:
+      - ${OPENSEARCH_PORT:-9200}:9200
+      - ${OPENSEARCH_PERF_PORT:-9600}:9600
+    networks:
+      - opensearch-net
+    restart: unless-stopped
+    # GPU support - only applied when ENABLE_GPU=true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: ${GPU_DRIVER:-}
+              count: ${GPU_COUNT:-0}
+              capabilities: [gpu]
+
+  opensearch-node2:
+    image: opensearchproject/opensearch:${OPENSEARCH_VERSION:-3.4.0}
+    container_name: opensearch-node2
+    environment:
+      - cluster.name=${CLUSTER_NAME:-opensearch-cluster}
+      - node.name=opensearch-node2
+      - discovery.seed_hosts=opensearch-node1,opensearch-node2
+      - cluster.initial_cluster_manager_nodes=opensearch-node1,opensearch-node2
+      - bootstrap.memory_lock=true
+      - "OPENSEARCH_JAVA_OPTS=-Xms${HEAP_SIZE:-512m} -Xmx${HEAP_SIZE:-512m} -Xss2m"
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_PASSWORD:-Admin@123}
+      - plugins.security.disabled=${SECURITY_DISABLED:-false}
+      # GPU Configuration (only used when ENABLE_GPU=true)
+      - PYTORCH_VERSION=${PYTORCH_VERSION:-1.12.1}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch-data2:/usr/share/opensearch/data
+    networks:
+      - opensearch-net
+    restart: unless-stopped
+    # GPU support - only applied when ENABLE_GPU=true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: ${GPU_DRIVER:-}
+              count: ${GPU_COUNT:-0}
+              capabilities: [gpu]
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:${OPENSEARCH_VERSION:-3.4.0}
+    container_name: opensearch-dashboards
+    ports:
+      - ${DASHBOARDS_PORT:-5601}:5601
+    expose:
+      - "5601"
+    environment:
+      - OPENSEARCH_HOSTS=["https://opensearch-node1:9200","https://opensearch-node2:9200"]
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=${SECURITY_DISABLED:-false}
+    networks:
+      - opensearch-net
+    depends_on:
+      - opensearch-node1
+      - opensearch-node2
+    restart: unless-stopped
+
+volumes:
+  opensearch-data1:
+    driver: local
+  opensearch-data2:
+    driver: local
+
+networks:
+  opensearch-net:
+    driver: bridge

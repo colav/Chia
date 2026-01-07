@@ -1,0 +1,19 @@
+# Environment variables (may contain sensitive data)
+.env.local
+.env.production
+
+# Data directories (if mounted locally)
+data/
+logs/
+
+# Backup files
+backup/
+snapshots/
+
+# GPU test outputs
+gpu-test-*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+

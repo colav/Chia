@@ -1,0 +1,13 @@
+# Ollama data
+ollama-data/
+
+# Environment files
+.env.local
+.env.production
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
