@@ -1,0 +1,16 @@
+# Docker Compose override file for GPU acceleration with NVIDIA
+# Usage: docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+
+version: '3.8'
+
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all  # Use all available GPUs
+              capabilities: [gpu]
+    environment:
+      - CUDA_VISIBLE_DEVICES=0  # GPU device ID(s), comma-separated for multiple

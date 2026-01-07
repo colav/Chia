@@ -16,6 +16,13 @@ This is a mono repo with DevOps packages for multiple Colav services.
 - **GPU Support:** ✅ NVIDIA CUDA 11.6+ for ML acceleration
 - **Documentation:** [opensearch/README.md](opensearch/README.md) | [GPU Setup Guide](opensearch/GPU_SETUP.md)
 
+### 🤖 Ollama (NEW)
+- **Version:** v0.13.5
+- **Features:** Local LLM server, 100+ models, GPU support
+- **Location:** `ollama/`
+- **GPU Support:** ✅ NVIDIA CUDA for faster inference
+- **Documentation:** [ollama/README.md](ollama/README.md)
+
 ### 🔍 Elasticsearch
 - **Location:** `elasticsaerch/`
 - **Documentation:** [elasticsaerch/README.md](elasticsaerch/README.md)
