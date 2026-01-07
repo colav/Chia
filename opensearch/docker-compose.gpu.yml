@@ -1,0 +1,36 @@
+# Docker Compose override file for GPU acceleration
+# Usage: docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#
+# This file enables NVIDIA GPU support for OpenSearch ML workloads
+# Requires: NVIDIA GPU with CUDA 11.6+, nvidia-container-toolkit installed
+
+version: '3.8'
+
+services:
+  opensearch-node1:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1  # Adjust based on available GPUs
+              capabilities: [gpu]
+    environment:
+      # Increase JVM stack size for GPU workloads
+      - "OPENSEARCH_JAVA_OPTS=-Xms${HEAP_SIZE:-512m} -Xmx${HEAP_SIZE:-512m} -Xss2m"
+      - PYTORCH_VERSION=1.12.1
+      - CUDA_VISIBLE_DEVICES=0  # GPU device ID to use
+
+  opensearch-node2:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1  # Adjust based on available GPUs
+              capabilities: [gpu]
+    environment:
+      # Increase JVM stack size for GPU workloads
+      - "OPENSEARCH_JAVA_OPTS=-Xms${HEAP_SIZE:-512m} -Xmx${HEAP_SIZE:-512m} -Xss2m"
+      - PYTORCH_VERSION=1.12.1
+      - CUDA_VISIBLE_DEVICES=1  # Different GPU for node2 if available

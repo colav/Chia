@@ -5,7 +5,34 @@ Dev-Ops for Colav services
 
 
 # Description
-This a mono repo with devops packages for multiples colav services.
+This is a mono repo with DevOps packages for multiple Colav services.
+
+## Available Services
+
+### 🔍 OpenSearch (NEW)
+- **Version:** 3.4.0
+- **Features:** 2-node cluster + Dashboards, CPU/GPU support
+- **Location:** `opensearch/`
+- **GPU Support:** ✅ NVIDIA CUDA 11.6+ for ML acceleration
+- **Documentation:** [opensearch/README.md](opensearch/README.md) | [GPU Setup Guide](opensearch/GPU_SETUP.md)
+
+### 🔍 Elasticsearch
+- **Location:** `elasticsaerch/`
+- **Documentation:** [elasticsaerch/README.md](elasticsaerch/README.md)
+
+### 🗄️ MongoDB
+- **Location:** `mongodb/`
+- **Documentation:** [mongodb/README.md](mongodb/README.md)
+
+### 🎨 Guatquyca (Impactu UI)
+- **Description:** Frontend package for Impactu services
+- **Location:** `guatquyca/`
+- **Documentation:** [guatquyca/README.md](guatquyca/README.md)
+
+### 🤖 OpenAlex Topic Classification
+- **Description:** AI model for document topic prediction
+- **Location:** `openalex-topic-classification/`
+- **Documentation:** [openalex-topic-classification/README.md](openalex-topic-classification/README.md)
 
 # Installation
 
@@ -16,18 +43,12 @@ sudo sysctl -w vm.max_map_count=262144
 ```
 
 ## Dependencies
-Docker and docker-compose is required.
-* https://docs.docker.com/engine/install/ubuntu/ (or https://docs.docker.com/engine/install/debian/, etc)
-* Install `docker-compose`:  
-```bash
-apt install docker-compose
-```
-or
-```bash
-pip install docker-compose
-```
+Docker with Compose plugin v2 is required.
+* Install Docker: https://docs.docker.com/engine/install/ubuntu/ (or https://docs.docker.com/engine/install/debian/, etc)
+* Docker Compose v2 comes bundled with Docker Desktop and Docker Engine
+* Verify installation: `docker compose version`
 
-* https://docs.docker.com/engine/install/linux-postinstall/
+* Post-installation steps: https://docs.docker.com/engine/install/linux-postinstall/
 
 
 # Usage
