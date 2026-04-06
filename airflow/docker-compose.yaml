@@ -21,6 +21,14 @@ x-airflow-common:
                   "refresh_interval": 300,
                   "subdir": "."
               }
+          },
+          {
+              "name": "local",
+              "classpath": "airflow.dag_processing.bundles.local.LocalDagBundle",
+              "kwargs": {
+                  "path": "/opt/airflow/dags",
+                  "refresh_interval": 30
+              }
           }
       ]
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
@@ -39,6 +47,8 @@ x-airflow-common:
   - ${IMPACTU_AIRFLOW_PATH:-/storage/airflow}/data:/opt/airflow/data
   - ${AIRFLOW_PROJ_DIR:-.}/connections.yaml:/opt/airflow/connections.yaml
   user: ${AIRFLOW_UID:-50000}:0
+  extra_hosts: &airflow-extra-hosts
+  - "host.docker.internal:host-gateway"
   depends_on: &id006
     redis: &id004
       condition: service_healthy
@@ -84,6 +94,7 @@ services:
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
+    extra_hosts: *airflow-extra-hosts
     depends_on:
       redis: *id004
       postgres: *id005
@@ -108,6 +119,7 @@ services:
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
+    extra_hosts: *airflow-extra-hosts
     depends_on:
       redis: *id004
       postgres: *id005
@@ -130,6 +142,7 @@ services:
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
+    extra_hosts: *airflow-extra-hosts
     depends_on:
       redis: *id004
       postgres: *id005
@@ -152,6 +165,7 @@ services:
       DUMB_INIT_SETSID: '0'
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
+    extra_hosts: *airflow-extra-hosts
     depends_on:
       redis: *id004
       postgres: *id005
@@ -176,6 +190,7 @@ services:
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
+    extra_hosts: *airflow-extra-hosts
     depends_on:
       redis: *id004
       postgres: *id005
@@ -201,6 +216,7 @@ services:
       _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
     volumes: *id003
     user: 0:0
+    extra_hosts: *airflow-extra-hosts
     depends_on:
       redis: *id004
       postgres: *id005
@@ -249,6 +265,7 @@ services:
       CONNECTION_CHECK_MAX_COUNT: '0'
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
+    extra_hosts: *airflow-extra-hosts
     depends_on:
       redis: *id004
       postgres: *id005
@@ -263,6 +280,7 @@ services:
     environment: *id002
     volumes: *id003
     user: ${AIRFLOW_UID:-50000}:0
+    extra_hosts: *airflow-extra-hosts
     depends_on:
       redis: *id004
       postgres: *id005

@@ -3,6 +3,10 @@ mongodb_default:
   host: mongodb
   port: 27017
   schema: impactu
+elasticsearch_default:
+  conn_type: elasticsearch
+  host: host.docker.internal
+  port: 9200
 git_impactu:
   conn_type: git
   host: https://github.com/colav/impactu_airflow.git
