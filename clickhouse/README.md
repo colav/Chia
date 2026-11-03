@@ -17,14 +17,18 @@ clickhouse/
 │   ├── 001_create_database.sql
 │   ├── 002_create_topics.sql
 │   ├── 003_create_themes.sql
-│   └── 004_create_theme_topics.sql
-├── scripts/
-│   ├── load_topics.py
-│   ├── requirements.txt
-│   └── data/
-│       └── openalex_topics.csv  # catálogo OpenAlex, se commitea (data semilla)
+│   ├── 004_create_theme_topics.sql
+│   ├── 005_create_hs_products.sql
+│   └── 006_create_trade_data.sql
+├── scripts/                     # Cargas y pruebas (requirements.txt incluido)
+├── ollama-qwen/                 # Ollama aparte para los embeddings de Qwen
+├── reranker/                    # Servicio de reordenamiento de candidatos
 └── README.md
 ```
+
+El CSV del catálogo de tópicos (`scripts/data/openalex_topics.csv`) y los
+datos del Atlas **no se versionan**: se obtienen aparte (ver "Cargar el
+catálogo de tópicos") y `scripts/data/` está fuera del repositorio.
 
 ## Quick Start
 
@@ -33,7 +37,7 @@ cp .env.example .env
 # editar .env: contraseña real, y CLICKHOUSE_CPUS/CLICKHOUSE_RAM según el servidor
 
 docker compose up -d
-docker compose ps          # confirmar "healthy"
+docker compose ps          # confirmar "healthy" (el healthcheck consulta /ping)
 ```
 
 `.env` está en `.gitignore` — nunca se commitea, a diferencia de `mongodb/.env`
@@ -41,8 +45,9 @@ en este mismo repo (que sí tiene una contraseña real versionada; deuda
 técnica existente que decidimos no replicar acá).
 
 Al primer arranque (volumen `clickhouse_data` vacío), se ejecutan en orden
-alfabético los `.sql` de `init/`, creando la base `theme_curation` y sus 3
-tablas: `topics`, `themes`, `theme_topics`.
+alfabético los `.sql` de `init/`, creando la base `theme_curation` y sus 6
+tablas: `topics`, `themes`, `theme_topics`, `hs_products`,
+`trade_country_year` y `trade_world_year`.
 
 ## Cómo se conecta quyca
 
@@ -67,6 +72,10 @@ docker compose exec clickhouse clickhouse-client \
 ```bash
 cd scripts
 pip install -r requirements.txt
+
+# el CSV del catálogo (4.516 tópicos de OpenAlex) no está en este repositorio:
+# colócalo en scripts/data/openalex_topics.csv (columnas: topic_id, topic_name,
+# subfield_*, field_*, domain_*, keywords, summary, wikipedia_url)
 
 # probar primero con pocas filas
 python load_topics.py --csv-path data/openalex_topics.csv --limit 20
@@ -94,8 +103,8 @@ verdad quieres truncarla y recargar desde cero.
 - **`topics` es una carga única, no un pipeline recurrente.** El catálogo de
   OpenAlex (4.516 tópicos + su embedding) no cambia en la operación normal
   del sistema. La carga (leer el CSV, calcular embeddings vía Ollama,
-  insertar) es un script que se corre una vez a mano — **no va en Airflow**.
-  Ese script es el siguiente paso, todavía no está en esta carpeta.
+  insertar) es un script que se corre una vez a mano — **no va en Airflow**
+  (`scripts/load_topics.py`).
 - **`theme_topics` usa `ReplacingMergeTree`, no hace UPDATE real.** Ver el
   comentario en `init/004_create_theme_topics.sql` — toda lectura desde
   quyca debe usar `FINAL`.
