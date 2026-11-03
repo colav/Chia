@@ -1,0 +1,27 @@
+# Servicio del reranker (D-097, B72)
+
+Reordena los 120 tópicos de la fase 1 con **Qwen3-Reranker-4B (Q4_K_M)** en llama.cpp. Un proceso aparte, junto a Ollama; escucha solo en `127.0.0.1:11437`. Quyca lo llama desde `POST /app/theme/candidates/rerank` (contrato `02` §3.10).
+
+## Qué hace
+- Carga el modelo **una vez** al arrancar (todas las capas en GPU) y no lo descarga.
+- **Una petición a la vez**, cola FIFO. Una petición que espera más de su `timeout_s` (60 s desde quyca) recibe 503 y se descarta.
+- Receta de B62/B63: instrucción 1, documento `"{name}. {keywords}. {summary}"`, puntaje = P(sí) de los logits «yes»/«no», caché del prefijo compartido. Semillas de más de 2.000 tokens se cortan para el reranker (`seed_truncated` en la respuesta).
+- API interna: `GET /health` y `POST /rerank` (ver el encabezado de `rerank_service.py`); la respuesta trae `seed_truncated`, que quyca reenvía en la fase 2. No registra el texto de las peticiones.
+
+## Arranque
+Todo junto (contenedores, reranker y quyca-dev en el puerto 8080 (`make up-dev`), con espera de `/health` y log en `~/ASCUN/logs/`):
+```bash
+bash arranque_herramienta.sh              # arranca lo que falte; --reiniciar reconstruye quyca-dev (make down-dev && make up-dev, ~2 min con el 8080 caído) y reinicia el reranker; --solo-reranker; --detener los apaga
+```
+Solo el reranker:
+```bash
+bash run_reranker.sh        # primer plano; usa ~/ASCUN/reranker_venv y ~/ASCUN/modelos/qwen3-reranker-4b-q4_k_m.gguf
+```
+Variables: `RERANKER_GGUF`, `RERANKER_PORT` (11437), `RERANKER_NGL` (99), `RERANKER_THREADS` (6), `RERANKER_CTX` (3072), `RERANKER_VENV`.
+En quyca: `RERANKER_URL=http://127.0.0.1:11437` (vacío desactiva la fase 2), `RERANKER_TIMEOUT_S=60`, `OLLAMA_NUM_GPU`.
+
+## Memoria de la GPU de 4 GB (laptop)
+El reranker residente ocupa ≈ 3,1 GB; los embeddings de Ollama al 100 % en GPU (3,8 GB) no caben juntos. Configuración elegida (B72, corregida en B73 con semillas distintas): **reranker en GPU y `OLLAMA_NUM_GPU=20` en quyca** (embeddings 31 %/69 % CPU/GPU: 0,4-1,1 s por semilla nueva, la fase 1 completa ≈ 1,4 s; reordenar 120 tarda 11-16 s) y `OLLAMA_KEEP_ALIVE=24h` en el contenedor (la primera petición tras 31 min tardó 0,22 s). Con `OLLAMA_NUM_GPU=0` una semilla nueva tardaba 7-11 s y una muy larga superaba el límite de 120 s: descartado. Sin reranker (`out/b71/arranque_gpu.sh`) los embeddings van 100 % en GPU. En un servidor de ≥ 8 GB, `OLLAMA_NUM_GPU` vacío.
+
+## Entorno
+`llama-cpp-python` 0.3.36 compilado con CUDA 12.4 y las bibliotecas `nvidia-*-cu12` en un venv fuera del repositorio (`~/ASCUN/reranker_venv`, copia del entorno de B62). Los GGUF están en `~/ASCUN/modelos/` con `SHA256SUMS` (4B `941f7d1d…af49`, 0,6B `22c9979c…c9a48`).
